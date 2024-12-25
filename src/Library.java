@@ -1,25 +1,49 @@
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class Library {
-    private List<Book> books = new ArrayList<>();
+    private List<LibraryItem> items = new ArrayList<>();
 
-    public void addBook(Book book) {
-        books.add(book);
+    public void addItem(LibraryItem item) {
+        items.add(item);
     }
 
-    public void displayBooks() {
-        for (Book book : books) {
-            System.out.println(book);
+    public void displayItems() {
+        System.out.println("\n===== All Books =====");
+        for (LibraryItem item : items) {
+            System.out.println(item);
         }
+        System.out.println("=====================");
     }
 
-    public Book findBook(String title) {
-        for (Book book : books) {
-            if (book.getTitle().equalsIgnoreCase(title)) {
-                return book;
+    public LibraryItem findItem(String title) {
+        for (LibraryItem item : items) {
+            if (item.getTitle().equalsIgnoreCase(title)) {
+                return item;
             }
         }
+        System.out.println("Book not found: " + title);
         return null;
+    }
+
+    public void displayAvailableItems() {
+        List<LibraryItem> availableItems = items.stream()
+                .filter(item -> !item.isBorrowed())
+                .collect(Collectors.toList());
+        System.out.println("\n===== Available Books =====");
+        for (LibraryItem item : availableItems) {
+            System.out.println(item);
+        }
+        System.out.println("===========================");
+    }
+
+    public void sortItems() {
+        Collections.sort(items, Comparator.comparing(LibraryItem::getTitle));
+    }
+
+    public void displaySortedItems() {
+        sortItems();
+        System.out.println("\n===== Sorted Books =====");
+        displayItems();
     }
 }
