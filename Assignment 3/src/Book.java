@@ -1,5 +1,3 @@
-import java.util.Objects;
-
 public class Book {
     private int id;
     private String title;
@@ -40,21 +38,8 @@ public class Book {
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Book book = (Book) o;
-        return title.equals(book.title); // Сравнение по названию
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(title);
-    }
-
-    @Override
     public String toString() {
-        return title + " by " + author + " (" + yearOfPublication + ")" +
-                (isBorrowed ? " (Borrowed)" : " (Available)");
+        return id + ". " + title + " by " + author + " (" + yearOfPublication + ") - " +
+                (isBorrowed ? "Borrowed" : "Available");
     }
 }

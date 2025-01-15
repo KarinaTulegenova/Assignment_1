@@ -2,49 +2,40 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class LibraryUser {
+    private int id;
     private String name;
-    private List<Book> borrowedBooks = new ArrayList<>();
+    private String email;
+    private List<String> borrowedBooks;
 
-    public LibraryUser(String name) {
+    public LibraryUser(int id, String name, String email, List<String> borrowedBooks) {
+        this.id = id;
         this.name = name;
+        this.email = email;
+        this.borrowedBooks = borrowedBooks;
     }
 
     public String getName() {
         return name;
     }
 
-    public List<Book> getBorrowedBooks() {
+    public List<String> getBorrowedBooks() {
         return borrowedBooks;
     }
 
     public void borrowBook(Book book) {
-        if (!book.isBorrowed()) {
-            book.setBorrowed(true);
-            borrowedBooks.add(book);
-            System.out.println(name + " взял книгу: " + book.getTitle());
-        } else {
-            System.out.println("Книга " + book.getTitle() + " уже занята.");
-        }
+        borrowedBooks.add(book.getTitle());
+        System.out.println(name + " borrowed the book: " + book.getTitle());
     }
 
     public void returnBook(Book book) {
-        if (borrowedBooks.contains(book)) {
-            book.setBorrowed(false);
-            borrowedBooks.remove(book);
-            System.out.println(name + " вернул книгу: " + book.getTitle());
-        } else {
-            System.out.println("Эта книга не была взята " + name + ".");
-        }
+        borrowedBooks.remove(book.getTitle());
+        System.out.println(name + " returned the book: " + book.getTitle());
     }
 
     public void displayBorrowedBooks() {
-        if (borrowedBooks.isEmpty()) {
-            System.out.println(name + " не взял ни одной книги.");
-        } else {
-            System.out.println(name + " взял следующие книги:");
-            for (Book book : borrowedBooks) {
-                System.out.println("- " + book.getTitle());
-            }
+        System.out.println(name + " has borrowed the following books:");
+        for (String title : borrowedBooks) {
+            System.out.println("- " + title);
         }
     }
 }

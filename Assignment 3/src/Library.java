@@ -1,44 +1,38 @@
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 
 public class Library {
 
     public void addBookToDatabase(String title, String author, int year) {
-        String sql = "INSERT INTO books (title, author, year_of_publication, is_borrowed) VALUES (?, ?, ?, FALSE)";
+        String sql = "INSERT INTO books (title, author, year_of_publication, is_borrowed) VALUES (?, ?, ?, false)";
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setString(1, title);
             pstmt.setString(2, author);
             pstmt.setInt(3, year);
             pstmt.executeUpdate();
-            System.out.println("Book added to the database: " + title);
+            System.out.println("Book added: " + title);
         } catch (SQLException e) {
-            System.out.println("Error while adding the book: " + e.getMessage());
+            System.out.println("Error adding book: " + e.getMessage());
         }
     }
 
     public void displayBooksFromDatabase() {
         String sql = "SELECT * FROM books";
         try (Connection conn = DatabaseConnection.getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(sql);
-             ResultSet rs = pstmt.executeQuery()) {
-            System.out.println("List of books:");
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(sql)) {
             while (rs.next()) {
                 int id = rs.getInt("id");
                 String title = rs.getString("title");
                 String author = rs.getString("author");
                 int year = rs.getInt("year_of_publication");
                 boolean isBorrowed = rs.getBoolean("is_borrowed");
-                System.out.println(id + ": " + title + " by " + author + " (" + year + ")" +
-                        (isBorrowed ? " (Borrowed)" : " (Available)"));
+                System.out.println(new Book(id, title, author, year, isBorrowed));
             }
         } catch (SQLException e) {
-            System.out.println("Error while displaying books: " + e.getMessage());
+            System.out.println("Error fetching books: " + e.getMessage());
         }
     }
 
@@ -58,7 +52,7 @@ public class Library {
                 );
             }
         } catch (SQLException e) {
-            System.out.println("Error while finding the book: " + e.getMessage());
+            System.out.println("Error finding book: " + e.getMessage());
         }
         return null;
     }
@@ -72,28 +66,41 @@ public class Library {
             pstmt.executeUpdate();
             System.out.println("Book status updated for: " + title);
         } catch (SQLException e) {
-            System.out.println("Error while updating book status: " + e.getMessage());
+            System.out.println("Error updating book status: " + e.getMessage());
         }
     }
 
-    // New method to sort books by ID
     public void sortBooksById() {
-        String sql = "SELECT * FROM books ORDER BY id ASC";
+        String sql = "SELECT * FROM books ORDER BY id";
         try (Connection conn = DatabaseConnection.getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(sql);
-             ResultSet rs = pstmt.executeQuery()) {
-            System.out.println("Books sorted by ID:");
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(sql)) {
             while (rs.next()) {
                 int id = rs.getInt("id");
                 String title = rs.getString("title");
                 String author = rs.getString("author");
                 int year = rs.getInt("year_of_publication");
                 boolean isBorrowed = rs.getBoolean("is_borrowed");
-                System.out.println(id + ": " + title + " by " + author + " (" + year + ")" +
-                        (isBorrowed ? " (Borrowed)" : " (Available)"));
+                System.out.println(new Book(id, title, author, year, isBorrowed));
             }
         } catch (SQLException e) {
-            System.out.println("Error while sorting books: " + e.getMessage());
+            System.out.println("Error sorting books: " + e.getMessage());
         }
     }
+    public void deleteBookFromDatabase(String title) {
+        String sql = "DELETE FROM books WHERE title = ?";
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, title);
+            int rowsAffected = pstmt.executeUpdate();
+            if (rowsAffected > 0) {
+                System.out.println("Book deleted: " + title);
+            } else {
+                System.out.println("No book found with title: " + title);
+            }
+        } catch (SQLException e) {
+            System.out.println("Error deleting book: " + e.getMessage());
+        }
+    }
+
 }
